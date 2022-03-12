@@ -13,6 +13,7 @@ class Post(models.Model):
                                     verbose_name='Date of publication',)
     group = models.ForeignKey(
         'Group',
+        related_name='posts',
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
