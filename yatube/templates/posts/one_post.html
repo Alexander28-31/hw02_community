@@ -1,0 +1,7 @@
+<ul>
+    <li>Авторы: {{ post.author.get_full_name }}</li>
+    <li>Дата публикации: {{ post.pub_date|date:"d E Y" }}</li>
+  </ul>
+  <p>
+    {{ post.text|linebreaks }}
+  </p>

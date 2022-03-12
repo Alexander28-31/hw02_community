@@ -13,7 +13,6 @@ class Post(models.Model):
                                     verbose_name='Date of publication',)
     group = models.ForeignKey(
         'Group',
-        related_name='posts',
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
@@ -27,7 +26,7 @@ class Post(models.Model):
     class Meta:
         verbose_name = 'Alex Posting'
         verbose_name_plural = 'Alex Postings'
-        ordering = ['-pub_date']
+        ordering = ('-pub_date',)
 
 
 class Group(models.Model):
