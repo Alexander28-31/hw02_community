@@ -30,6 +30,9 @@ class Post(models.Model):
         verbose_name_plural = 'Alex Postings'
         ordering = ('-pub_date',)
 
+    def __str__(self) -> str:
+        return self.text
+
 
 class Group(models.Model):
     """Модель для тематических сообществ пользователей """
