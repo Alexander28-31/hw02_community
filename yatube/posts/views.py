@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
+from .forms import FormPost
 from .models import Group, Post, User
 
 
@@ -59,13 +60,21 @@ def post_detail(request, post_id):
 
 
 def post_create(request):
+
     if request.method == 'POST':
-        form = PostForm(request,Post)
-        
+        form = FormPost(request.POST)
+
         if form.is_valid():
-            post.text = form.cleaned_data['text']
-            post.group = form.cleaned_data['proup']
-            post.save()
-            return redirect ('post:profile/ request.user.username')
-    form =PostForm()
-    return render (request, 'posts/create.html', {'form': form})    
+            post = form.save(commit=False)
+            post.author = request.user
+            form.save()
+            return redirect('posts:profile', request.user)
+        return render(request, 'posts/post_create.html', {'form': form})
+    form = FormPost()
+    
+    
+def post_edit(request, post_id):
+    post = get_object_or_404(Post, pk= post_id)
+    
+    
+    

@@ -11,7 +11,8 @@ class Post(models.Model):
 
     text = models.TextField(verbose_name='Description')
     pub_date = models.DateTimeField(auto_now_add=True,
-                                    verbose_name='Date of publication',)
+                                    verbose_name='Date of publication')
+    author = models.TextField(verbose_name='Author')
     group = models.ForeignKey(
         Group,
         related_name='posts',
