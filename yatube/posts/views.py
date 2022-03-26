@@ -1,6 +1,7 @@
 
 
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -38,7 +39,7 @@ def profile(request, username):
     page_obj = paginator.get_page(page_number)
     context = {
         'page_obj': page_obj,
-        'author ': author,
+        'author': author,
         'author_post': author_post,
         'posts_numbers': posts_numbers,
 
@@ -47,8 +48,9 @@ def profile(request, username):
 
 
 def post_detail(request, post_id):
+
     post = Post.objects.select_related('author', 'group').get(id=post_id)
-    post_count = Post.objects.filter(author=post).count()
+    post_count = Post.objects.filter(author=post.author).count()
     post_list = post.author.posts.all()
     context = {
         'post_list': post_list,
@@ -59,6 +61,7 @@ def post_detail(request, post_id):
     return render(request, 'posts/post_detail.html', context)
 
 
+@login_required
 def post_create(request):
 
     if request.method == 'POST':
@@ -71,10 +74,40 @@ def post_create(request):
             return redirect('posts:profile', request.user)
         return render(request, 'posts/post_create.html', {'form': form})
     form = FormPost()
-    
-    
+    return render(request, 'posts/post_create.html', {'form': form})
+
+
+'''@login_required
 def post_edit(request, post_id):
-    post = get_object_or_404(Post, pk= post_id)
-    
-    
-    
+    post = get_object_or_404(Post, pk=post_id)
+    form = FormPost(request.POST, instance=post)
+    is_edit = True
+    if post.author == request.user:
+        if request.method == "POST":
+            form = FormPost(request.POST, instance=post)
+    if form.is_valid():
+        post = form.save(commit=False)
+        post.author = request.user
+        post.save()
+        return redirect('posts:profile', post.author)
+    else:
+        form = FormPost(instance=post)
+    return render(request, 'posts/create_post.html', {'form': form, 'is_edit': is_edit, 'post': post})'''
+
+
+@login_required
+def post_edit(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    is_edit = True
+    if request.method == 'GET':
+        form = FormPost(instance=post)
+    if request.method == 'POST':
+        form = FormPost(request.POST, instance=post)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+            return redirect('posts:profile', post.author)
+        else:
+            form = FormPost(instance=post)
+    return render(request, 'posts/post_create.html', {'form': form, 'is_edit': is_edit, 'post': post})
